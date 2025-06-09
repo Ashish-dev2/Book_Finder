@@ -1,0 +1,495 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookFinder Pro - Bulk ISBN Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e74c3c;
+            --primary-dark: #c0392b;
+            --secondary: #ecf0f1;
+            --secondary-dark: #bdc3c7;
+            --accent: #e67e22;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --gray: #7f8c8d;
+            --light-gray: #ecf0f1;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f9f9f9 0%, #f1f1f1 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .dropdown-menu a.dropdown-item {
+            font-size: 1rem;
+            padding: 10px 20px;
+        }
+        .dropdown-menu a.dropdown-item:hover {
+            background-color: var(--light-gray);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .search-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .option-btn {
+            flex: 1 1 22%;
+            min-width: 200px;
+            text-align: center;
+            padding: 18px;
+            background: white;
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .option-btn.active {
+            border-color: var(--primary);
+            background-color: rgba(231, 76, 60, 0.05);
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .option-btn i {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        
+        .option-btn h4 {
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .option-btn p {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin: 5px 0 0;
+        }
+        
+        .search-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            
+        }
+        
+        .card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 4px;
+            width: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .file-upload {
+            border: 2px dashed var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            background-color: #fffafa;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary);
+            background-color: rgba(231, 76, 60, 0.05);
+        }
+        
+        .file-upload i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .btn-lg {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        footer {
+            background: linear-gradient(to right, var(--dark), #343a40);
+            color: white;
+            padding: 30px 0 20px;
+            margin-top: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .logo {
+                justify-content: center;
+            }
+            
+            .search-options {
+                flex-direction: column;
+            }
+        }
+        @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+.tab-content {
+    padding: 20px 0 0 0;
+}
+.tab-pane {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+.tab-pane.active {
+    display: block;
+}
+@media (max-width: 992px) {
+    .search-options {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .option-btn {
+        min-width: unset;
+        width: 100%;
+    }
+}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-book"></i>
+                <h1>BookFinder Pro</h1>
+            </div>
+            <div class="actions dropdown">
+                <button class="btn text-white" id="menu-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end mt-2">
+                <li><a class="dropdown-item" href="/">Search Books</a></li>
+                <li><a class="dropdown-item disabled" href="#">Atlantic Assistant(coming soon)</a></li>
+                <li><a class="dropdown-item" href="/help">Help</a></li>
+                </ul>
+            </div>
+
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="search-container">
+            {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ error }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+            
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold mb-3">Find Books Instantly</h1>
+                <!-- <p class="lead text-muted">Check book availability using ISBNs</p> -->
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-search"></i>
+                    <h2>Search Method</h2>
+                </div>
+                <div class="search-options">
+                    <div class="option-btn active" id="isbn-option" data-tab="isbn-tab">
+                        <i class="fas fa-barcode"></i>
+                        <h4>ISBN Search</h4>
+                        <p>Search by ISBN numbers</p>
+                    </div>
+                    <div class="option-btn" id="title-option" data-tab="title-tab">
+                        <i class="fas fa-heading"></i>
+                        <h4>Title Search</h4>
+                        <p>(coming soon)</p>
+                    </div>
+                    <div class="option-btn" id="advanced-option" data-tab="advanced-tab">
+                        <i class="fas fa-search-plus"></i>
+                        <h4>Advanced Search</h4>
+                        <p>(coming soon)</p>
+                    </div>
+                    <div class="option-btn" id="image-option" data-tab="image-tab">
+                        <i class="fas fa-images"></i>
+                        <h4>Get Cover Images</h4>
+                        <p>Download cover images</p>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <!-- ISBN Search Tab -->
+                    <div class="tab-pane active" id="isbn-tab">
+                        <form method="POST" action="/search/isbn" enctype="multipart/form-data">
+                            <div class="mb-4">
+                                <h4 class="mb-3"><i class="fas fa-keyboard me-2 text-primary"></i>Enter ISBNs</h4>
+                                <p class="text-muted">Enter one ISBN per line or separate with commas/semicolons</p>
+                                <textarea name="isbns_text" class="form-control" rows="6" placeholder="Example:
+9781492041139
+9780143464471
+9780061120084
+9780743273565"></textarea>
+                            </div>
+                            <div class="text-center my-4 position-relative">
+                                <span class="bg-white px-3">OR</span>
+                                <hr class="position-absolute top-50 start-0 end-0" style="z-index: -1;">
+                            </div>
+                            <div>
+                                <h4 class="mb-3"><i class="fas fa-file-upload me-2 text-primary"></i>Upload File</h4>
+                                <p class="text-muted">Upload Excel, CSV, or text file containing ISBNs</p>
+                                <div class="mb-3">
+                                    <input class="form-control" type="file" name="isbns_file" accept=".xlsx,.xls,.csv,.txt">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-lg btn-block mt-4">
+                                <i class="fas fa-search"></i> Search Books
+                            </button>
+                        </form>
+                    </div>
+                    <!-- Title Search Tab -->
+                    <div class="tab-pane" id="title-tab">
+                        <form method="POST" action="/search/title" enctype="multipart/form-data">
+                            <div class="mb-4">
+                                <h4 class="mb-3"><i class="fas fa-keyboard me-2 text-primary"></i>Enter Titles</h4>
+                                <p class="text-muted">Enter one title per line or separate with commas/semicolons</p>
+                                <textarea name="titles_text" class="form-control" rows="6" placeholder="Example:
+Data Science from Scratch
+Machine Learning
+The Great Gatsby
+To Kill a Mockingbird"></textarea>
+                            </div>
+                            <div class="text-center my-4 position-relative">
+                                <span class="bg-white px-3">OR</span>
+                                <hr class="position-absolute top-50 start-0 end-0" style="z-index: -1;">
+                            </div>
+                            <div>
+                                <h4 class="mb-3"><i class="fas fa-file-upload me-2 text-primary"></i>Upload File</h4>
+                                <p class="text-muted">Upload Excel, CSV, or text file containing titles</p>
+                                <div class="mb-3">
+                                    <input class="form-control" type="file" name="titles_file" accept=".xlsx,.xls,.csv,.txt">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-lg btn-block mt-4">
+                                <i class="fas fa-search"></i> Search Books
+                            </button>
+                        </form>
+                    </div>
+                    <!-- Advanced Search Tab -->
+                    <div class="tab-pane" id="advanced-tab">
+                        <form method="POST" action="/search/advanced" enctype="multipart/form-data">
+                            <div class="mb-4">
+                                <h4 class="mb-3"><i class="fas fa-keyboard me-2 text-primary"></i>Enter Details</h4>
+                                <p class="text-muted">Enter author, publisher, or other details</p>
+                                <textarea name="advanced_text" class="form-control" rows="6" placeholder="Example:
+author: George Orwell
+publisher: Penguin
+title: 1984"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-lg btn-block mt-4">
+                                <i class="fas fa-search"></i> Search Books
+                            </button>
+                        </form>
+                    </div>
+                    <!-- Get Cover Images Tab -->
+                    <div class="tab-pane" id="image-tab">
+                        <form method="POST" action="/download-images" enctype="multipart/form-data">
+                            <div class="mb-4">
+                                <h4 class="mb-3"><i class="fas fa-keyboard me-2 text-primary"></i>Enter ISBNs</h4>
+                                <p class="text-muted">Enter one ISBN per line or separate with commas/semicolons</p>
+                                <textarea name="image_isbns_text" class="form-control" rows="6" placeholder="Example:
+9781492041139
+9780143464471
+9780061120084
+9780743273565"></textarea>
+                            </div>
+                            <div class="text-center my-4 position-relative">
+                                <span class="bg-white px-3">OR</span>
+                                <hr class="position-absolute top-50 start-0 end-0" style="z-index: -1;">
+                            </div>
+                            <div>
+                                <h4 class="mb-3"><i class="fas fa-file-upload me-2 text-primary"></i>Upload File</h4>
+                                <p class="text-muted">Upload Excel, CSV, or text file containing ISBNs</p>
+                                <div class="mb-3">
+                                    <input class="form-control" type="file" name="image_isbns_file" accept=".xlsx,.xls,.csv,.txt">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-lg btn-block mt-4">
+                                <i class="fas fa-download"></i> Download Images
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                            <i class="fas fa-bolt fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Fast Processing</h4>
+                        <p class="card-text">Check hundreds of books in seconds with our optimized search.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                            <i class="fas fa-database fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Comprehensive Data</h4>
+                        <p class="card-text">Get detailed information including metadata.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                            <i class="fas fa-file-excel fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Export Results</h4>
+                        <p class="card-text">Download complete reports in Excel format.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <div class="text-center text-white-50">
+                <p class="mb-0">&copy; 2025 BookFinder Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tab switching logic
+        const optionButtons = document.querySelectorAll('.option-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+        optionButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.classList.contains('active')) {
+                    optionButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    // Switch tab
+                    const tabId = this.getAttribute('data-tab');
+                    tabPanes.forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    document.getElementById(tabId).classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

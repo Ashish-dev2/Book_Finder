@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Search Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* All styles from the previous template */
+        :root {
+            --primary: #e74c3c;
+            --secondary: #ecf0f1;
+            --accent: #e67e22;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            color: white;
+            font-weight: 600;
+            border-bottom: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .search-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-card {
+            border-radius: 12px;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .result-card .card-img-top {
+            height: 220px;
+            object-fit: contain;
+            background: #f8f9fa;
+            padding: 15px;
+        }
+        
+        .result-card .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .result-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 10px;
+            display: -webkit-box;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .result-card .card-text {
+            color: #6c757d;
+            font-size: 0.9rem;
+            flex-grow: 1;
+        }
+        
+        .result-card .btn-details {
+            margin-top: auto;
+            background: var(--accent);
+            border: none;
+            font-size: 0.9rem;
+            padding: 8px 15px;
+        }
+        
+        .not-found-card {
+            background: #fff8f8;
+            border: 1px dashed #ff6b6b;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            border-radius: 12px;
+        }
+        
+        .badge-custom {
+            background: var(--accent);
+            font-weight: 500;
+            padding: 7px 12px;
+            border-radius: 20px;
+        }
+        
+        .view-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        
+        .view-btn {
+            margin: 0 10px;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            background: white;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .view-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .view-btn:hover:not(.active) {
+            background: #eef2ff;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+        
+        .stat-card h3 {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .stat-card p {
+            color: #6c757d;
+            margin: 0;
+        }
+        
+        .modal-content {
+            border-radius: 16px;
+            overflow: hidden;
+            border: none;
+        }
+        
+        .modal-header {
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            color: white;
+        }
+        
+        .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .book-detail-img {
+            max-height: 300px;
+            width: auto;
+            display: block;
+            margin: 0 auto 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--primary);
+            margin-right: 8px;
+        }
+        
+        .detail-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .synopsis {
+            background: #f9f9ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        footer {
+            background: linear-gradient(to right, var(--dark), #343a40);
+            color: white;
+            padding: 30px 0 20px;
+            margin-top: 50px;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        @media (max-width: 768px) {
+            .search-container {
+                padding: 20px;
+                margin: 20px auto;
+            }
+            
+            .stat-card {
+                margin-bottom: 15px;
+            }
+            
+            .view-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="fas fa-book me-2"></i>
+                <span class="fw-bold">BookFinder Pro</span>
+            </a>
+            <div class="actions dropdown">
+                <button class="btn text-white" id="menu-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end mt-2">
+                <li><a class="dropdown-item" href="/">Search Books</a></li>
+                <li><a class="dropdown-item disabled" href="#">Download Images (coming soon)</a></li>
+                <li><a class="dropdown-item" href="/help">Help</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Results Section -->
+    <div class="container py-4">
+        <div class="search-container">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold mb-3">Search Results</h1>
+                <p class="lead text-muted">Found {{ book_data.found - book_data.total }} of {{ book_data.total }} books</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-5">
+                <div class="col-md-4">
+                    <div class="stat-card card">
+                        <i class="fas fa-book"></i>
+                        <h3>{{ book_data.total }}</h3>
+                        <p>Books Searched</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card card">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>{{ book_data.found - book_data.total }}</h3>
+                        <p>Books Found</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card card">
+                        <i class="fas fa-times-circle"></i>
+                        <h3>{{ 2*book_data.total - book_data.found }}</h3>
+                        <p>Books Not Found</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Switcher -->
+            <div class="view-switcher">
+                <button id="tableViewBtn" class="view-btn active">
+                    <i class="fas fa-table me-2"></i>Table View
+                </button>
+                <button id="gridViewBtn" class="view-btn">
+                    <i class="fas fa-th-large me-2"></i>Grid View
+                </button>
+            </div>
+
+            <!-- Table View -->
+            <div id="tableView">
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center p-3 bg-light">
+                        <h5 class="mb-0">Result Details</h5>
+                        <button id="downloadBtn" class="btn btn-primary">
+                            <i class="fas fa-download me-2"></i>Download Excel
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Input ISBN</th>
+                                    <th>Cover</th>
+                                    <th>Title</th>
+                                    <th>Authors</th>
+                                    <th>Publisher</th>
+                                    <th>ISBN13</th>
+                                    <th>Published</th>
+                                    <th>Pages</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for book in book_data.results %}
+                                <tr>
+                                    <td>{{ book.input }}</td>
+                                    <td>
+                                        {% if book.image %}
+                                        <img src="{{ book.image }}" alt="{{ book.title }}" style="height: 60px; width: auto;">
+                                        {% else %}
+                                        <div class="bg-light border rounded text-center" style="height: 60px; width: 45px; line-height: 60px;">
+                                            <i class="fas fa-book text-muted"></i>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ book.title }}</td>
+                                    <td>{{ book.authors }}</td>
+                                    <td>{{ book.publisher }}</td>
+                                    <td>{{ book.isbn13 }}</td>
+                                    <td>{{ book.year }}</td>
+                                    <td>{{ book.pages }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary view-details" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#detailModal"
+                                                data-book="{{ book | tojson | forceescape }}">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid View -->
+            <div id="gridView" style="display: none;">
+                <div class="d-flex justify-content-end mb-4">
+                    <button id="downloadBtnGrid" class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i>Download Excel
+                    </button>
+                </div>
+                <div class="row g-4">
+                    {% for book in book_data.results %}
+                    <div class="col-md-4 col-lg-3">
+                        {% if book.found %}
+                        <div class="result-card card">
+                            {% if book.image %}
+                            <img src="{{ book.image }}" class="card-img-top" alt="{{ book.title }}">
+                            {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                                <i class="fas fa-book fa-3x text-muted"></i>
+                            </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ book.title }}</h5>
+                                <p class="card-text">{{ book.authors }}</p>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="text-muted">{{ book.year }}</small>
+                                    <span class="badge bg-primary">edition : {{ book.edition }}</span>
+                                </div>
+                                <button class="btn btn-details view-details" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#detailModal"
+                                        data-book="{{ book | tojson | forceescape }}">
+                                    <i class="fas fa-info-circle me-2"></i>Details
+                                </button>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="not-found-card">
+                            <div>
+                                <i class="fas fa-book fa-3x text-danger mb-3"></i>
+                                <h5 class="mb-2">Book Not Found</h5>
+                                <p class="text-muted mb-0">ISBN: {{ book.input }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalTitle">Book Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="detailModalBody">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="text-center text-white-50">
+                <p class="mb-0">&copy; 2025 BookFinder Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script id="resultsData" type="application/json">
+        {{ book_data.results | tojson }}
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // View switching functionality
+        document.getElementById('tableViewBtn').addEventListener('click', function() {
+            document.getElementById('tableView').style.display = 'block';
+            document.getElementById('gridView').style.display = 'none';
+            this.classList.add('active');
+            document.getElementById('gridViewBtn').classList.remove('active');
+        });
+
+        document.getElementById('gridViewBtn').addEventListener('click', function() {
+            document.getElementById('tableView').style.display = 'none';
+            document.getElementById('gridView').style.display = 'block';
+            this.classList.add('active');
+            document.getElementById('tableViewBtn').classList.remove('active');
+        });
+
+        // Book detail modal
+        const detailButtons = document.querySelectorAll('.view-details');
+        detailButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const bookData = JSON.parse(this.dataset.book);
+                populateDetailModal(bookData);
+            });
+        });
+
+        function populateDetailModal(book) {
+            const title = document.createElement('h4');
+            title.textContent = book.title;
+            title.className = 'mb-3';
+            
+            let image = '';
+            if (book.image) {
+                image = `<img src="${book.image}" class="book-detail-img" alt="${book.title}">`;
+            } else {
+                image = `<div class="bg-light rounded d-flex align-items-center justify-content-center mb-4" style="height: 200px;">
+                            <i class="fas fa-book fa-4x text-muted"></i>
+                         </div>`;
+            }
+            
+            const details = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Authors:</span> ${book.authors}
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Publisher:</span> ${book.publisher}
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Published Year:</span> ${book.year}
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">ISBN-13:</span> ${book.isbn13}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Pages:</span> ${book.pages}
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Language:</span> ${book.language}
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Binding:</span> ${book.binding}
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Price:</span> ${book.msrp}
+                        </div>
+                    </div>
+                </div>
+                <div class="synopsis">
+                    <h5 class="mb-3">Description</h5>
+                    <p>${book.synopsis}</p>
+                </div>
+            `;
+            
+            document.getElementById('detailModalTitle').textContent = book.title;
+            document.getElementById('detailModalBody').innerHTML = image + details;
+        }
+
+        // Download functionality
+        document.getElementById('downloadBtn').addEventListener('click', downloadResults);
+            const results = JSON.parse(document.getElementById('resultsData').textContent);
+
+        function downloadResults() {
+            const results = JSON.parse(document.getElementById('resultsData').textContent);
+            
+            fetch('/download-results', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ results: results })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Download failed');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'book_search_results.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to download results');
+            });
+        }
+    </script>
+</body>
+</html>

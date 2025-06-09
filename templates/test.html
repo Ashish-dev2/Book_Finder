@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookFinder Pro - Comprehensive Book Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3f37c9;
+            --secondary: #f8f9fa;
+            --accent: #4cc9f0;
+            --success: #2ec4b6;
+            --light: #f8f9fa;
+            --dark: #2b2d42;
+            --gray: #8d99ae;
+            --light-gray: #edf2f4;
+            --border-radius: 10px;
+            --box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e6e9f0 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.2rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .search-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .option-btn {
+            flex: 1 1 22%;
+            min-width: 200px;
+            text-align: center;
+            padding: 18px;
+            background: white;
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .option-btn.active {
+            border-color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.05);
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .option-btn i {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        
+        .option-btn h4 {
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .option-btn p {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin: 5px 0 0;
+        }
+        
+        .search-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: none;
+        }
+        
+        .card-header {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: white;
+            padding: 15px 20px;
+            border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+            margin: -25px -25px 20px;
+            border: none;
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .card-title i {
+            font-size: 1.8rem;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--primary);
+            position: relative;
+        }
+        
+        .section-title:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+        
+        .file-upload {
+            border: 2px dashed var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            background-color: #fafbff;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .file-upload i {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(90deg, var(--success), #2bbbad);
+        }
+        
+        .btn-lg {
+            padding: 15px 35px;
+            font-size: 1.15rem;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .feature-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            background: white;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feature-icon {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+        
+        .feature-icon i {
+            font-size: 3rem;
+            color: white;
+        }
+        
+        .feature-content {
+            padding: 25px;
+            flex: 1;
+        }
+        
+        .feature-content h4 {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .feature-content p {
+            color: var(--gray);
+        }
+        
+        footer {
+            background: linear-gradient(135deg, var(--dark), #1d1f33);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: 50px;
+        }
+        
+        .tab-content {
+            padding: 20px 0;
+        }
+        
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .search-options {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .search-options {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .option-btn {
+                min-width: unset;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-book-open"></i>
+                    <h1>BookFinder Pro</h1>
+                </div>
+                <div class="actions">
+                    <a href="#" class="btn btn-sm">
+                        <i class="fas fa-user me-2"></i>My Account
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="search-container">
+            {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ error }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+            
+            <h2 class="section-title">Find Books Instantly</h2>
+            
+            <div class="search-options mb-4">
+                <div class="option-btn active" id="isbn-option" data-tab="isbn">
+                    <i class="fas fa-barcode"></i>
+                    <h4>ISBN Search</h4>
+                    <p>Search by ISBN numbers</p>
+                </div>
+                <div class="option-btn" id="title-option" data-tab="title">
+                    <i class="fas fa-heading"></i>
+                    <h4>Title Search</h4>
+                    <p>Search by book titles</p>
+                </div>
+                <div class="option-btn" id="advanced-option" data-tab="advanced">
+                    <i class="fas fa-search-plus"></i>
+                    <h4>Advanced Search</h4>
+                    <p>Author, publisher, etc.</p>
+                </div>
+                <div class="option-btn" id="image-option" data-tab="image">
+                    <i class="fas fa-images"></i>
+                    <h4>Get Cover Images</h4>
+                    <p>Download cover images</p>
+                </div>
+            </div>
+            
+            <div class="tab-content">
+                <!-- ISBN Search Tab -->
+                <div class="tab-pane active" id="isbn-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-barcode"></i>
+                                <h3>Search by ISBN</h3>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h4 class="mb-3"><i class="fas fa-keyboard me-2 text-primary"></i>Enter ISBNs</h4>
+                                <p class="text-muted">Enter one ISBN per line or separate with commas/semicolons</p>
+                                <textarea name="isbns_text" class="form-control" rows="6" placeholder="Example:
+9781492041139
+9780143464471
+9780061120084
+9780743273565"></textarea>
+                            </div>
+                            
+                            <div class="text-center my-4 position-relative">
+                                <span class="bg-white px-3">OR</span>
+                                <hr class="position-absolute top-50 start-0 end-0" style="z-index: -1;">
+                            </div>
+                            
+                            <div>
+                                <h4 class="mb-3"><i class="fas fa-file-upload me-2 text-primary"></i>Upload File</h4>
+                                <p class="text-muted">Upload Excel, CSV, or text file containing ISBNs</p>
+                                <div class="mb-3">
+                                    <input class="form-control" type="file" name="isbns_file" accept=".xlsx,.xls,.csv,.txt">
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-lg btn-block mt-4">
+                                <i class="fas fa-search me-2"></i> Search Books
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Title Search Tab -->
+                <div class="tab-pane" id="title-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-heading"></i>
+                                <h3>Search by Title</h3>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h4 class="mb-3"><i class="fas fa-keyboard me-2 text-primary"></i>Enter Book Titles</h4>
+                                <p class="text-muted">Enter one book title per line</p>
+                                <textarea name="titles_text" class="form-control" rows="6" placeholder="Example:
+Data Science from Scratch
+Machine Learning
+The Great Gatsby
+To Kill a Mockingbird"></textarea>
+                            </div>
+                            
+                            <div class="text-center my-4 position-relative">
+                                <span class="bg-white px-3">OR</span>
+                                <hr class="position-absolute top-50 start-0 end-0" style="z-index: -1;">
+                            </div>
+                            
+                            <div>
+                                <h4 class="mb-3"><i class="fas fa-file-upload me-2 text-primary"></i>Upload File</h4>
+                                <p class="text-muted">Upload Excel, CSV, or text file containing book titles</p>
+                                <div class="mb-3">
+                                    <input class="form-control" type="file" name="titles_file" accept=".xlsx,.xls,.csv,.txt">
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-lg btn-block mt-4">
+                                <i class="fas fa-search me-2"></i> Search Books
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Advanced Search Tab -->
+                <div class="tab-pane" id="advanced-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-search-plus"></i>
+                                <h3>Advanced Search</h3>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Title</label>
+                                    <input type="text" class="form-control" placeholder="Book title">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Author</label>
+                                    <input type="text" class="form-control" placeholder="Author name">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Publisher</label>
+                                    <input type="text" class="form-control" placeholder="Publisher">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Subject</label>
+                                    <input type="text" class="form-control" placeholder="Subject or category">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Published Year</label>
+                                    <input type="number" class="form-control" placeholder="Year">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Language</label>
+                                    <select class="form-select">
+                                        <option value="">Any language</option>
+                                        <option value="en">English</option>
+                                        <option value="es">Spanish</option>
+                                        <option value="fr">French</option>
+                                        <option value="de">German</option>
+                                        <option value="it">Italian</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Binding</label>
+                                    <select class="form-select">
+                                        <option value="">Any binding</option>
+                                        <option value="hardcover">Hardcover</option>
+                                        <option value="paperback">Paperback</option>
+                                        <option value="ebook">E-book</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center my-4 position-relative">
+                                <span class="bg-white px-3">OR</span>
+                                <hr class="position-absolute top-50 start-0 end-0" style="z-index: -1;">
+                            </div>
+                            
+                            <div>
+                                <h4 class="mb-3"><i class="fas fa-file-upload me-2 text-primary"></i>Upload File</h4>
+                                <p class="text-muted">Upload Excel, CSV, or text file with search parameters</p>
+                                <div class="mb-3">
+                                    <input class="form-control" type="file" name="advanced_file" accept=".xlsx,.xls,.csv,.txt">
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-lg btn-block mt-4">
+                                <i class="fas fa-search me-2"></i> Search Books
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Get Cover Images Tab -->
+                <div class="tab-pane" id="image-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-images"></i>
+                                <h3>Download Cover Images</h3>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-4">Enter ISBNs to download high-quality book cover images in bulk</p>
+                            <div class="mb-4">
+                                <h4 class="mb-3"><i class="fas fa-keyboard me-2 text-primary"></i>Enter ISBNs</h4>
+                                <p class="text-muted">Enter one ISBN per line or separate with commas/semicolons</p>
+                                <textarea name="image_isbns_text" class="form-control" rows="4" placeholder="Example:
+9781492041139
+9780143464471
+9780061120084
+9780743273565"></textarea>
+                            </div>
+                            <div class="text-center my-4 position-relative">
+                                <span class="bg-white px-3">OR</span>
+                                <hr class="position-absolute top-50 start-0 end-0" style="z-index: -1;">
+                            </div>
+                            <div>
+                                <h4 class="mb-3"><i class="fas fa-file-upload me-2 text-primary"></i>Upload File</h4>
+                                <p class="text-muted">Upload Excel, CSV, or text file containing ISBNs</p>
+                                <div class="mb-3">
+                                    <input class="form-control" type="file" name="image_isbns_file" accept=".xlsx,.xls,.csv,.txt">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-lg btn-block mt-4">
+                                <i class="fas fa-download me-2"></i> Download Images
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <h2 class="section-title mt-5">Why Choose BookFinder Pro?</h2>
+        
+        <div class="row mt-4 g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Lightning Fast Search</h4>
+                        <p>Search thousands of books in seconds with our optimized algorithms and API integration.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Comprehensive Data</h4>
+                        <p>Access detailed book information including pricing, availability, and metadata from multiple sources.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-image"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Bulk Image Download</h4>
+                        <p>Download high-quality book cover images in bulk for all your ISBNs with a single click.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Export Results</h4>
+                        <p>Download complete reports in Excel or CSV format for further analysis and record keeping.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud-download-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>API Integration</h4>
+                        <p>Seamless integration with ISBNdb API to provide accurate and up-to-date book information.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Secure & Private</h4>
+                        <p>Your searches and data remain private. We never share your information with third parties.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="logo text-white d-flex align-items-center gap-3 mb-3">
+                        <i class="fas fa-book-open fa-2x"></i>
+                        <h3 class="mb-0">BookFinder Pro</h3>
+                    </div>
+                    <p class="text-white-50">The ultimate solution for book search, metadata retrieval, and cover image downloads.</p>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5 class="text-white mb-3">Features</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50 text-decoration-none">ISBN Search</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Title Search</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Advanced Search</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Image Download</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5 class="text-white mb-3">Resources</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50 text-decoration-none">Documentation</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">API Reference</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Tutorials</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-white mb-3">Subscribe to Newsletter</h5>
+                    <p class="text-white-50">Get updates on new features and enhancements</p>
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Your email address">
+                        <button class="btn btn-primary">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-light my-4">
+            <div class="text-center text-white-50">
+                <p class="mb-0">&copy; 2025 BookFinder Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tab switching functionality
+        const optionButtons = document.querySelectorAll('.option-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+        
+        optionButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                
+                // Update active button
+                optionButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding tab
+                tabPanes.forEach(pane => pane.classList.remove('active'));
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // File upload hover effect
+        const fileUploads = document.querySelectorAll('.file-upload');
+        fileUploads.forEach(upload => {
+            upload.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--primary)';
+                this.style.backgroundColor = 'rgba(67, 97, 238, 0.05)';
+            });
+            
+            upload.addEventListener('dragleave', function() {
+                this.style.borderColor = 'var(--light-gray)';
+                this.style.backgroundColor = '#fafbff';
+            });
+            
+            upload.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--primary)';
+                this.style.backgroundColor = 'rgba(67, 97, 238, 0.05)';
+            });
+        });
+        
+        // Form submission feedback
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Processing...';
+            });
+        });
+        
+        // Image download button animation
+        const imageDownloadBtn = document.querySelector('.image-download-section .btn');
+        if (imageDownloadBtn) {
+            imageDownloadBtn.addEventListener('click', function() {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Downloading...';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-check me-2"></i> Download Complete!';
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-primary');
+                    
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-download me-2"></i> Download Images';
+                        this.classList.remove('btn-primary');
+                        this.classList.add('btn-success');
+                    }, 2000);
+                }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>
